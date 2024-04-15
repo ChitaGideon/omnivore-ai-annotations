@@ -1,6 +1,13 @@
-import OpenAI from "openai";
 import { v4 as uuidv4 } from "uuid";
 
+
+import { Configuration, OpenAIApi } from 'openai';
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+  basePath: `https://${process.env.OPENAI_PROXY_URL}/v1`
+});
+const openai = new OpenAIApi(configuration);
 export const config = {
   runtime: "edge",
 };
@@ -192,7 +199,7 @@ export default async (req) => {
 
   // STEP 2: generate a completion using OpenAI's API
   let completionResponse;
-  const openai = new OpenAI(); // defaults to process.env["OPENAI_API_KEY"]
+  // const openai = new OpenAI(); // defaults to process.env["OPENAI_API_KEY"]
   const prompt =
     process.env["OPENAI_PROMPT"] ||
     "Return a tweet-length TL;DR of the following article.";
@@ -282,6 +289,7 @@ Article content: ${articleContent}`,
         shortId: shortId,
         articleId: articleId,
         annotation: articleAnnotation,
+        labels:[{name:'ai'},{name:process.env.LABEL_NAME||'OPENAI'}]
       },
     },
   };
